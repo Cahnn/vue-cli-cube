@@ -1,0 +1,8 @@
+@import "~cube-ui/src/common/stylus/mixin.styl"
+
+// 当屏幕分辨率不同时采用不同大小的图标，默认是2x
+bg-image($url)
+  background-image: url($url+"@2x.png")
+  // @media 可以针对不同的屏幕尺寸设置不同的样式
+  @media (-webkit-min-device-pixel-ratio: 3),(min-device-pixel-ratio: 3)
+    background-image: url($url+"@3x.png")

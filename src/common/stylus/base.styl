@@ -1,0 +1,18 @@
+// 设置这两个标签下的默认样式
+html,body
+  height :100%
+  overflow :hidden
+  line-height: 1;
+  font-weight 200
+  font-family 'PingFang SC','STHeitiSC-Light','Helvetica-Light',Arial,sans-serif
+
+
+.clearfix
+  display inline-block
+  &:after  // 伪类？？
+    display block
+    content "."
+    height 0
+    line-height 0
+    clear both
+    visibility hidden
