@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="shopcart">
-      <div class="content">
+      <div class="content" @click="toggleList">
         <div class="content-left">
           <div class="logo-wrapper">
             <div class="logo" :class="{'highlight':totalCount>0}">
@@ -39,7 +39,6 @@
 
 <script type="text/ecmascript-6">
   import Bubble from '../bubble/bubble'
-
   const BALL_LEN = 10
   const innerClsHook = 'inner-hook'
 
@@ -74,6 +73,7 @@
     data() {
       return {
         balls: createBalls()
+        // listFold: this.fold
       }
     },
     computed: {
@@ -111,6 +111,7 @@
     },
     created() {
       this.dropBalls = []
+      this.listFold = true  // 默认弹层是收起状态
     },
     methods: {
       drop(el) {  // 小球飞入：接收按钮的位置
@@ -147,6 +148,34 @@
           ball.show = false
           el.style.display = 'none'
         }
+      },
+      toggleList() {
+        if (this.listFold) {
+          if (!this.totalCount) {
+            return
+          }
+          this.listFold = false
+          this._showShopCartList()
+        } else {
+          this.listFold = true
+          this._hideShopCartList()
+        }
+      },
+      _showShopCartList() {
+        this.shopCartListComp = this.shopCartListComp || this.$createShopCartList({
+          $props: {
+            selectFoods: 'selectFoods'
+          },
+          $events: {    // 派发一个事件，点击蒙层隐藏弹层
+            hide: () => {
+              this.listFold = true
+            }
+          }
+        })
+        this.shopCartListComp.show()
+      },
+      _hideShopCartList() {
+        this.shopCartListComp.hide()
       }
     },
     components: {

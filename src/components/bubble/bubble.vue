@@ -21,9 +21,10 @@
     display: inline-block
     padding: 0 5px
     height: 16px
-    width 12px
+    /*width 6px*/
     line-height: 16px
-    text-align: center
+    vertical-align center
+    /*text-align: center*/
     border-radius: 16px
     font-family: Helvetica
     font-weight: 700
