@@ -16,7 +16,7 @@
           <div class="desc">另需配送费￥{{deliveryPrice}}元</div>
         </div>
         <div class="content-right">
-          <div class="pay" :class="payClass">{{payDesc}}</div>
+          <div @click.stop="pay" class="pay" :class="payClass">{{payDesc}}</div>
         </div>
       </div>
 <!--     小球容器-->
@@ -39,6 +39,7 @@
 
 <script type="text/ecmascript-6">
   import Bubble from '../bubble/bubble'
+
   const BALL_LEN = 10
   const innerClsHook = 'inner-hook'
 
@@ -68,12 +69,20 @@
       minPrice: {    //  最小起送费
         type: Number,
         default: 0
+      },
+      fold: {
+        type: Boolean,
+        default: true
+      },
+      sticky: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
       return {
-        balls: createBalls()
-        // listFold: this.fold
+        balls: createBalls(),
+        listFold: this.fold
       }
     },
     computed: {
@@ -111,7 +120,6 @@
     },
     created() {
       this.dropBalls = []
-      this.listFold = true  // 默认弹层是收起状态
     },
     methods: {
       drop(el) {  // 小球飞入：接收按钮的位置
@@ -156,26 +164,70 @@
           }
           this.listFold = false
           this._showShopCartList()
+          this._showShopCartSticky()
         } else {
           this.listFold = true
           this._hideShopCartList()
         }
+      },
+      pay(e) {
+        if (this.totalPrice < this.minPrice) {
+          return
+        }
+        this.$createDialog({
+          title: '支付',
+          content: `支付${this.totalPrice}元`
+        }).show()
+        e.stopPropagation()   // 该方法将停止事件的传播，阻止它被分派到其他 Document 节点
       },
       _showShopCartList() {
         this.shopCartListComp = this.shopCartListComp || this.$createShopCartList({
           $props: {
             selectFoods: 'selectFoods'
           },
-          $events: {    // 派发一个事件，点击蒙层隐藏弹层
+          $events: {    // 监听事件
+            leave: () => {
+              this._hideShopCartSticky()
+            },
             hide: () => {
               this.listFold = true
+              // this._hideShopCartSticky()
+            },
+            add: (el) => {
+              this.shopCartStickyComp.drop(el)
             }
           }
         })
         this.shopCartListComp.show()
       },
+      _showShopCartSticky() {
+        this.shopCartStickyComp = this.shopCartStickyComp || this.$createShopCartSticky({
+          $props: {
+            selectFoods: 'selectFoods',
+            deliveryPrice: 'deliveryPrice',
+            minPrice: 'minPrice',
+            fold: 'listFold',
+            list: this.shopCartListComp
+          }
+        })
+        this.shopCartStickyComp.show()
+      },
       _hideShopCartList() {
-        this.shopCartListComp.hide()
+        const list = this.sticky ? this.$parent.list : this.shopCartListComp
+        list.hide && list.hide()
+      },
+      _hideShopCartSticky() {
+        this.shopCartStickyComp.hide()
+      }
+    },
+    watch: {
+      fold(newVal) {
+        this.listFold = newVal
+      },
+      totalCount(newVal) {
+        if (!this.listFold && !newVal) {
+          this._hideShopCartList()
+        }
       }
     },
     components: {
@@ -246,7 +298,7 @@
           line-height: 24px
           font-size: $fontsize-small-s
       .content-right
-        flex: 0 0 105px
+        flex: 0 0 0 105px
         width: 105px
         .pay
           height: 48px

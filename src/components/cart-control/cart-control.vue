@@ -12,6 +12,7 @@
 </template>
 
 <script type="text/ecmascript-6">
+
   const EVENT_ADD = 'add'
 
   export default {

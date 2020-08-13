@@ -36,7 +36,9 @@
           :title="good.name"
         >
           <ul>
+<!--            @click="selectFood">  点击商品时进入food组件（查看商品详情）-->
             <li
+              @click="selectFood(food)"
               v-for="food in good.foods"
               :key="food.name"
               class="food-item"
@@ -79,7 +81,6 @@
   import CartControl from '../cart-control/cart-control'
   import SupportIco from '../support-icon/support-ico'
   import Bubble from '../bubble/bubble'
-
   export default {
     name: 'goods',
     props: {
@@ -93,6 +94,9 @@
     data() {
       return {
         goods: [],
+        selectedFood: {
+
+        },
         scrollOptions: {
           click: false,
           directionLockThreshold: 0
@@ -132,13 +136,51 @@
       }
     },
     methods: {
+      selectFood(food) {
+        this.selectedFood = food
+        this._showFood()
+        this._showShopCartSticky()
+      },
       fetch() {
-        getGoods().then((goods) => {
+        if (!this.fetched) {   // 获取过数据就不再获取，更换页面时数据不会被刷新掉
+          this.fetched = true
+          getGoods().then((goods) => {
             this.goods = goods
-        })
+          })
+        }
       },
       onAdd(el) {   // 驱动shopCart组件项目动画
         this.$refs.shopCart.drop(el)
+      },
+      _showFood() {
+        this.foodComp = this.foodComp || this.$createFood({
+          $props: {
+            food: 'selectedFood'
+          },
+          $events: {
+            leave: () => {
+              this._hideShopCartList()
+            },
+            add: (el) => {
+              this.shopCartStickyComp.drop(el)
+            }
+          }
+        })
+        this.foodComp.show()
+      },
+      _showShopCartSticky() {      // 商品详情页的购物车sticky
+        this.shopCartStickyComp = this.shopCartStickyComp || this.$createShopCartSticky({
+          $props: {
+            selectFoods: 'selectFoods',
+            deliveryPrice: this.seller.deliveryPrice,
+            minPrice: this.seller.minPrice,
+            fold: true
+          }
+        })
+        this.shopCartStickyComp.show()
+      },
+      _hideShopCartList() {
+        this.shopCartStickyComp.hide()
       }
     },
     components: {
