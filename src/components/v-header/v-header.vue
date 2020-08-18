@@ -73,7 +73,6 @@
 </template>
 
 <script type="text/ecmascript-6">
-  // import SupportIco from '../support-icon/support-ico'
   import star from '../star/star'
 
   export default {

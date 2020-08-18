@@ -10,7 +10,7 @@
         <template slot="bar" slot-scope="props">
           <cube-scroll-nav-bar
             direction="vertical"
-            :label="props.label"
+            :labels="props.labels"
             :txts="barTxts"
             :current="props.current"
           >
@@ -81,6 +81,7 @@
   import CartControl from '../cart-control/cart-control'
   import SupportIco from '../support-icon/support-ico'
   import Bubble from '../bubble/bubble'
+
   export default {
     name: 'goods',
     props: {
@@ -144,7 +145,9 @@
       fetch() {
         if (!this.fetched) {   // 获取过数据就不再获取，更换页面时数据不会被刷新掉
           this.fetched = true
-          getGoods().then((goods) => {
+          getGoods(
+            { id: this.seller.id }
+          ).then((goods) => {
             this.goods = goods
           })
         }

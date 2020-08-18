@@ -49,7 +49,7 @@
               <ul v-show="computedRatings && computedRatings.length">
                 <li
                   v-for="(rating, index) in computedRatings"
-                  class="rating-item  border-bottom-1px"
+                  class="rating-item border-bottom-1px"
                   :key="index"
                 >
                   <div class="user">
@@ -74,6 +74,7 @@
 <script type="text/ecmascript-6">
   import Split from 'components/split/split'
   import popupMixin from 'common/mixins/popup'
+  import ratingMixin from '../../common/mixins/rating'
   import CartControl from '../cart-control/cart-control'
   import moment from 'moment'
   import RatingSelect from '../rating-select/rating-select'
@@ -82,10 +83,8 @@
   const EVENT_LEAVE = 'leave'
   const EVENT_ADD = 'add'
 
-  const ALL = 2
-
   export default {
-    mixins: [popupMixin],
+    mixins: [popupMixin, ratingMixin],
     name: 'food',
     props: {
       food: {
@@ -94,8 +93,6 @@
     },
     data() {
       return {
-        onlyContent: true,
-        selectType: ALL,
         desc: {
           all: '全部',
           positive: '推荐',
@@ -106,18 +103,6 @@
     computed: {
       ratings() {   // 获取ratings数据
         return this.food.ratings
-      },
-      computedRatings() {
-        let ret = []
-        this.ratings.forEach((rating) => {
-          if (this.onlyContent && !rating.text) {
-            return
-          }
-          if (this.selectType === ALL || this.selectType === rating.rateType) {
-            ret.push(rating)
-          }
-        })
-        return ret
       }
     },
     created() {
@@ -140,12 +125,6 @@
       },
       format(time) {
         return moment(time).format('YYYY-MM-DD hh:mm')
-      },
-      onSelect(type) {
-        this.selectType = type
-      },
-      ontoggle() {
-        this.onlyContent = !this.onlyContent
       }
     },
     components: {

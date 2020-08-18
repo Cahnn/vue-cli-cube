@@ -74,13 +74,13 @@
   import Star from '../star/star'
   import Split from '../split/split'
   import { getRatings } from 'api'
-  import RatingMixin from '../../common/mixins/rating'
+  import ratingMixin from '../../common/mixins/rating'
   import RatingSelect from '../rating-select/rating-select'
   import moment from 'moment'
 
   export default {
     name: 'ratings',
-    mixins: [RatingMixin],
+    mixins: [ratingMixin],
     props: {
       data: {
         type: Object

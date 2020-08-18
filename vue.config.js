@@ -2,7 +2,7 @@ const path = require('path')
 const appDate = require('./data.json')
 const seller = appDate.seller
 const goods = appDate.goods
-const rating = appDate.ratings
+const ratings = appDate.ratings
 
 function resolve(dir) {
   return path.join(__dirname, dir)
@@ -29,9 +29,10 @@ module.exports = {
   devServer: {
     before (app) {
       app.get('/api/seller', function (req, res) {
+        const id = req.query.id
         res.json({
           errno: 0,
-          data: seller
+          data: Object.assign({}, seller, { id })
         })
       })
       app.get('/api/goods', function (req, res) {
@@ -40,10 +41,10 @@ module.exports = {
           data: goods
         })
       })
-      app.get('/api/rating', function (req, res) {
+      app.get('/api/ratings', function (req, res) {
         res.json({
           errno: 0,
-          data: rating
+          data: ratings
         })
       })
     }
